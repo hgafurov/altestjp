@@ -81,7 +81,6 @@ public class TestRestController {
 										  @RequestParam(defaultValue = "0") int page, 
 										  @RequestParam(defaultValue = "5") int size) {
 		Pageable pageParam = PageRequest.of(page, size, Sort.Direction.ASC, "id");
-		System.out.println(filterCurrentUserTest);
 		Page<Test> pTests = testService.getAllByCritNomiFaniRazdel(filterCurrentUserTest.startsWith("true"), 
 																   filterNomi, filterFani, filterRazdel, 
 																   pageParam);

@@ -1,11 +1,20 @@
 package uz.alcedo.sproject.web.rest;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import uz.alcedo.sproject.model.Natija;
@@ -39,5 +48,21 @@ public class NatijaRestController {
         natija.setTest(testService.getById(natijaVM.getTestId()));
 		natija = natijaService.save(natija);    
         return new ResponseEntity<>(natija, HttpStatus.OK);
-    }	
+    }
+	
+	@GetMapping("/get-all-by-crit")
+	public ResponseEntity<?> getAllByCrit(@RequestParam(defaultValue = "true") String filterCurrentUser,
+										  @RequestParam(defaultValue = "0") int page, 
+										  @RequestParam(defaultValue = "5") int size) {
+		
+		Pageable pageParam = PageRequest.of(page, size, Sort.Direction.ASC, "id");
+		Page<Natija> pNatijas = natijaService.getAllByCrit(filterCurrentUser.startsWith("true"), 
+														   pageParam);
+		Map<Object, Object> response = new HashMap<>();
+		response.put("natija", pNatijas.getContent());
+		response.put("currentPage", pNatijas.getNumber());
+		response.put("totalPages", pNatijas.getTotalPages());
+		response.put("totalElements", pNatijas.getTotalElements());
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
 }
